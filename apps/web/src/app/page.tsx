@@ -1,39 +1,72 @@
-import { Button, buttonVariants } from "@/components/ui/button";
+import Link from "next/link";
+import { Sparkles, Compass, ExternalLink } from "lucide-react";
+import { buttonVariants } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { GlassPill } from "@/components/ui/glass-pill";
+import { TactileCard } from "@/components/ui/tactile-card";
 
 export default function Home() {
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-8 bg-gradient-to-b from-zinc-50 to-zinc-100 dark:from-zinc-950 dark:to-zinc-900">
-      <main className="max-w-2xl w-full flex flex-col items-center text-center space-y-6 bg-white dark:bg-zinc-900 p-10 rounded-2xl shadow-xl border border-zinc-200 dark:border-zinc-800">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
-          🎯 Next.js + FastAPI Monorepo
-        </div>
+    <div className="min-h-screen flex flex-col items-center justify-center p-6 sm:p-10 bg-background text-foreground transition-colors duration-200">
+      <main className="max-w-2xl w-full">
+        <TactileCard variant="raised" padding="lg" className="space-y-8 text-center flex flex-col items-center">
+          <div className="flex flex-wrap items-center justify-center gap-2">
+            <Badge variant="lime" size="sm" dot>
+              Next.js 16 + FastAPI
+            </Badge>
+            <GlassPill variant="default" size="sm" label="Design" value="Neu-Tactile" />
+          </div>
 
-        <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight text-zinc-900 dark:text-zinc-50">
-          ToeicKnot
-        </h1>
+          <div className="space-y-3">
+            <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight text-foreground">
+              ToeicKnot
+            </h1>
+            <p className="text-base sm:text-lg text-muted-foreground max-w-lg mx-auto leading-relaxed">
+              Nền tảng học và luyện thi TOEIC thông minh. Được trang bị hệ thống UI xúc giác vật lý
+              (Warm Tactile Design System) lấy cảm hứng từ phong cách tối giản hiện đại.
+            </p>
+          </div>
 
-        <p className="text-lg text-zinc-600 dark:text-zinc-400 max-w-lg">
-          Nền tảng học và luyện thi TOEIC thông minh. Được xây dựng với Next.js (App Router), shadcn/ui và backend FastAPI.
-        </p>
+          <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+            <Link
+              href="/showcase"
+              className={buttonVariants({
+                variant: "tactilePrimary",
+                size: "lg",
+                className: "px-6 gap-2",
+              })}
+            >
+              <Compass className="size-4" />
+              <span>Khám phá Component Showcase</span>
+            </Link>
+            <a
+              href="http://localhost:8000/docs"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={buttonVariants({
+                variant: "tactile",
+                size: "lg",
+                className: "px-6 gap-2",
+              })}
+            >
+              <ExternalLink className="size-4" />
+              <span>FastAPI Swagger Docs</span>
+            </a>
+          </div>
 
-        <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
-          <Button size="lg" className="px-6">
-            Bắt đầu luyện thi
-          </Button>
-          <a
-            href="http://localhost:8000/docs"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={buttonVariants({ variant: "outline", size: "lg", className: "px-6" })}
-          >
-            FastAPI Swagger Docs
-          </a>
-        </div>
-
-        <div className="w-full pt-6 border-t border-zinc-100 dark:border-zinc-800 text-xs text-zinc-500 flex justify-between items-center">
-          <span>Frontend: <code className="font-mono text-zinc-700 dark:text-zinc-300">port 3000</code></span>
-          <span>Backend: <code className="font-mono text-zinc-700 dark:text-zinc-300">port 8000</code></span>
-        </div>
+          <div className="w-full pt-6 border-t border-border/80 text-xs text-muted-foreground flex justify-between items-center">
+            <span>
+              Frontend: <code className="font-mono text-foreground font-medium">port 3000</code>
+            </span>
+            <span className="flex items-center gap-1.5">
+              <Sparkles className="size-3 text-amber-500" />
+              <span>Catalog: <code className="font-mono text-foreground font-medium">/showcase</code></span>
+            </span>
+            <span>
+              Backend: <code className="font-mono text-foreground font-medium">port 8000</code>
+            </span>
+          </div>
+        </TactileCard>
       </main>
     </div>
   );
