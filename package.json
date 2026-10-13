@@ -1,0 +1,18 @@
+{
+  "name": "toeicknot",
+  "private": true,
+  "scripts": {
+    "dev": "turbo run dev",
+    "dev:web": "turbo run dev --filter=@toeicknot/web",
+    "dev:api": "turbo run dev --filter=@toeicknot/api",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "check-types": "turbo run check-types",
+    "clean": "turbo run clean"
+  },
+  "devDependencies": {
+    "prettier": "^3.5.0",
+    "turbo": "^2.4.4"
+  },
+  "packageManager": "pnpm@12.6.0"
+}
