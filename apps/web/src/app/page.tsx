@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 
 export default function Home() {
   return (
@@ -24,10 +24,9 @@ export default function Home() {
             href="http://localhost:8000/docs"
             target="_blank"
             rel="noopener noreferrer"
+            className={buttonVariants({ variant: "outline", size: "lg", className: "px-6" })}
           >
-            <Button variant="outline" size="lg" className="px-6">
-              FastAPI Swagger Docs
-            </Button>
+            FastAPI Swagger Docs
           </a>
         </div>
 

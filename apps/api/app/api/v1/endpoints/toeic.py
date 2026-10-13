@@ -1,14 +1,8 @@
 from fastapi import APIRouter
-from pydantic import BaseModel
+
+from app.schemas.toeic import ToeicPart
 
 router = APIRouter()
-
-
-class ToeicPart(BaseModel):
-    part: int
-    name: str
-    description: str
-    questions_count: int
 
 
 @router.get("/parts", response_model=list[ToeicPart])

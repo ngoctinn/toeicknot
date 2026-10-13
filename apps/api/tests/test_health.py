@@ -1,5 +1,6 @@
 from fastapi.testclient import TestClient
 
+from app.core.config import Settings
 from app.main import app
 
 client = TestClient(app)
@@ -21,3 +22,8 @@ def test_toeic_parts():
     response = client.get("/api/v1/toeic/parts")
     assert response.status_code == 200
     assert len(response.json()) == 7
+
+
+def test_cors_origins_validator():
+    cfg = Settings(BACKEND_CORS_ORIGINS="http://example.com, https://toeicknot.com")
+    assert cfg.BACKEND_CORS_ORIGINS == ["http://example.com", "https://toeicknot.com"]

@@ -8,7 +8,7 @@ Hệ thống luyện thi TOEIC thông minh với kiến trúc Monorepo chuẩn b
 toeicknot/
 ├── apps/
 │   ├── web/                    # Frontend: Next.js 16 (App Router), Tailwind CSS v4, shadcn/ui
-│   └── api/                    # Backend: FastAPI (Python 3.14+, uv, Pydantic, Uvicorn)
+│   └── api/                    # Backend: FastAPI (Python >= 3.11, uv, Pydantic, Uvicorn)
 ├── packages/
 │   └── typescript-config/      # Cấu hình TypeScript dùng chung
 ├── docs/                       # Coding Friend documentation
