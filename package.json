@@ -5,6 +5,7 @@
     "dev": "turbo run dev",
     "dev:web": "turbo run dev --filter=@toeicknot/web",
     "dev:api": "turbo run dev --filter=@toeicknot/api",
+    "test": "turbo run test",
     "build": "turbo run build",
     "lint": "turbo run lint",
     "check-types": "turbo run check-types",

@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "check-types": "tsc --noEmit",
+    "test": "echo \"@toeicknot/web: No unit tests specified yet\" && exit 0",
     "clean": "rm -rf .next out dist"
   },
   "dependencies": {

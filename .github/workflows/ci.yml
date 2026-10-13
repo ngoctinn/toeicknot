@@ -1,0 +1,166 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions: {}
+
+jobs:
+  changes:
+    name: Detect Changes
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      web: ${{ steps.filter.outputs.web }}
+      api: ${{ steps.filter.outputs.api }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Path Filter
+        uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            web:
+              - 'apps/web/**'
+              - 'packages/**'
+              - 'package.json'
+              - 'pnpm-lock.yaml'
+              - 'pnpm-workspace.yaml'
+              - 'turbo.json'
+              - '.github/workflows/ci.yml'
+            api:
+              - 'apps/api/**'
+              - 'package.json'
+              - 'pnpm-lock.yaml'
+              - 'pnpm-workspace.yaml'
+              - 'turbo.json'
+              - '.github/workflows/ci.yml'
+
+  web-ci:
+    name: Web CI (Next.js)
+    needs: changes
+    if: ${{ needs.changes.outputs.web == 'true' || github.event_name == 'push' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 12.6.0
+          run_install: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - name: Cache pnpm store
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Check TypeScript types
+        run: pnpm check-types
+
+      - name: Lint Web
+        run: pnpm --filter=@toeicknot/web lint
+
+      - name: Run Web tests
+        run: pnpm --filter=@toeicknot/web test
+
+      - name: Build Web
+        run: pnpm --filter=@toeicknot/web build
+
+  api-ci:
+    name: API CI (FastAPI)
+    needs: changes
+    if: ${{ needs.changes.outputs.api == 'true' || github.event_name == 'push' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Setup uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+          cache-dependency-glob: "apps/api/pyproject.toml"
+
+      - name: Install backend dependencies
+        working-directory: apps/api
+        run: uv sync --extra dev
+
+      - name: Lint with Ruff
+        working-directory: apps/api
+        run: uv run ruff check .
+
+      - name: Run Pytest suite
+        working-directory: apps/api
+        run: uv run pytest
+
+  ci-status:
+    name: CI Status Gate
+    needs: [changes, web-ci, api-ci]
+    if: always()
+    runs-on: ubuntu-latest
+    permissions: {}
+    steps:
+      - name: Evaluate status
+        run: |
+          echo "Changes result: ${{ needs.changes.result }}"
+          echo "Web CI result: ${{ needs.web-ci.result }}"
+          echo "API CI result: ${{ needs.api-ci.result }}"
+
+          if [ "${{ needs.changes.result }}" = "failure" ] || [ "${{ needs.changes.result }}" = "cancelled" ]; then
+            echo "::error::Changes detection job failed or was cancelled."
+            exit 1
+          fi
+
+          if [ "${{ needs.web-ci.result }}" = "failure" ] || [ "${{ needs.web-ci.result }}" = "cancelled" ]; then
+            echo "::error::Web CI job failed or was cancelled."
+            exit 1
+          fi
+
+          if [ "${{ needs.api-ci.result }}" = "failure" ] || [ "${{ needs.api-ci.result }}" = "cancelled" ]; then
+            echo "::error::API CI job failed or was cancelled."
+            exit 1
+          fi
+
+          echo "All relevant CI checks passed successfully."
